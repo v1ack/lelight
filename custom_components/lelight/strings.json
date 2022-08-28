@@ -1,0 +1,11 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "data": {
+          "host": "MAC or ID from connected app"
+        }
+      }
+    }
+  }
+}

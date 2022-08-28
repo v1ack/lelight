@@ -1,0 +1,7 @@
+{
+  "homeassistant": "2022.6.0",
+  "name": "ha-lelight",
+  "render_readme": true,
+  "zip_release": true,
+  "filename": "ha-lelight.zip"
+}
