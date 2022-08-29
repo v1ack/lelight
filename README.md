@@ -12,6 +12,8 @@ There are at least 3 apps with the same light control
 
 If your lamp works with any of the above apps, this integration is for you
 
+This integration is push-only, because it is not possible to get state of the lamp. On startup the state is `off`.
+
 ## Configuration
 
 1. Connect your lamp to any of the above apps
