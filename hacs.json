@@ -1,5 +1,5 @@
 {
   "homeassistant": "2022.6.0",
-  "name": "ha-lelight",
+  "name": "lelight",
   "render_readme": true
 }
