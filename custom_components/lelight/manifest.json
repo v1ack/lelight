@@ -16,9 +16,5 @@
   "config_flow": true,
   "loggers": [
     "lelight"
-  ],
-  "supported_brands": {
-    "lelight": "Le Light",
-    "iralan": "IRALAN"
-  }
+  ]
 }
