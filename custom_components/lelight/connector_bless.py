@@ -17,7 +17,7 @@ class BlessServer(BlessServerBlueZDBus):
     async def setup(self):
         await super().setup()
         self.adv = BlueZLEAdvertisement(Type.BROADCAST, 1, self.app)
-        self.adv._tx_power = -15
+        self.adv._tx_power = -35
 
         self.app.advertisements = [self.adv]
         self.bus.export(self.adv.path, self.adv)

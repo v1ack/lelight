@@ -79,7 +79,7 @@ class LeLight(LightEntity):
         if not self._state:
             self.app.send(Commands.turn_on())
         # resp = requests.post(f"{self._host}/lamp?command=turn_on").json()
-        # logger.info(f"lamp turn_on: {resp}")
+        logger.debug(f"lamp turn_on: {kwargs}")
         self._state = True
         if ATTR_BRIGHTNESS in kwargs:
             self._brightness = normalize_value(kwargs[ATTR_BRIGHTNESS], 255, 1000)
