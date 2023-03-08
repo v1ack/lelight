@@ -1,27 +1,20 @@
-"""Platform for light integration."""
-from __future__ import annotations
-
-import logging
+from logging import getLogger
 from typing import Any
 
 from homeassistant.components.light import (
     ATTR_BRIGHTNESS,
-    ATTR_COLOR_TEMP,
+    ATTR_COLOR_TEMP_KELVIN,
     LightEntity,
     ColorMode,
 )
 from homeassistant.helpers.entity import DeviceInfo
-from homeassistant.util.color import (
-    color_temperature_mired_to_kelvin,
-    color_temperature_kelvin_to_mired,
-)
 
 from .connector import App
 from .connector_bless import BlessBackend
 from .const import DOMAIN
 from .encoder import Commands
 
-logger = logging.getLogger("lelight")
+logger = getLogger(DOMAIN)
 
 
 async def async_setup_entry(hass, config_entry, async_add_entities):
@@ -36,8 +29,8 @@ def normalize_value(value: int, max: int, new_max: int) -> int:
 
 
 class LeLight(LightEntity):
-    min_mireds = color_temperature_kelvin_to_mired(6400)
-    max_mireds = color_temperature_kelvin_to_mired(3000)
+    min_color_temp_kelvin = 3000
+    max_color_temp_kelvin = 6400
 
     _attr_unique_id = "lelight_light"
 
@@ -68,8 +61,8 @@ class LeLight(LightEntity):
         return normalize_value(self._brightness, 1000, 255)
 
     @property
-    def color_temp(self) -> int | None:
-        return color_temperature_kelvin_to_mired(self._temp)
+    def color_temp_kelvin(self) -> int | None:
+        return self._temp
 
     @property
     def color_mode(self) -> ColorMode | None:
@@ -78,26 +71,18 @@ class LeLight(LightEntity):
     def turn_on(self, **kwargs: Any) -> None:
         if not self._state:
             self.app.send(Commands.turn_on())
-        # resp = requests.post(f"{self._host}/lamp?command=turn_on").json()
         logger.debug(f"lamp turn_on: {kwargs}")
         self._state = True
         if ATTR_BRIGHTNESS in kwargs:
             self._brightness = normalize_value(kwargs[ATTR_BRIGHTNESS], 255, 1000)
-            # resp = requests.post(
-            #     f"{self._host}/lamp?command=bright&value={self._brightness}"
-            # ).json()
             # logger.info(f"lamp bright: {resp}")
             self.app.send(Commands.bright(self._brightness))
-        if ATTR_COLOR_TEMP in kwargs:
-            self._temp = color_temperature_mired_to_kelvin(kwargs[ATTR_COLOR_TEMP])
-            # resp = requests.post(
-            #     f"{self._host}/lamp?command=temp&value={self._temp}"
-            # ).json()
+        if ATTR_COLOR_TEMP_KELVIN in kwargs:
+            self._temp = kwargs[ATTR_COLOR_TEMP_KELVIN]
             # logger.info(f"lamp temp: {resp}")
             self.app.send(Commands.temp(self._temp))
 
     def turn_off(self, **kwargs: Any) -> None:
-        # resp = requests.post(f"{self._host}/lamp?command=turn_off").json()
         # logger.info(f"lamp turn_off: {resp}")
         self.app.send(Commands.turn_off())
         self._state = False
@@ -108,11 +93,6 @@ class LeLight(LightEntity):
         This is the only method that should fetch new data for Home Assistant.
         """
         pass
-        # data = requests.get(f"{self._host}/lamp").json()
-        # logger.info(f"lamp update: {data}")
-        # self._state = data["is_on"]
-        # self._brightness = data["brightness"]
-        # self._temp = data["temp"]
 
     @property
     def is_on(self) -> bool:

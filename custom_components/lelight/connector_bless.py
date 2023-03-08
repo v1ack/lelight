@@ -7,17 +7,18 @@ from bless.backends.bluezdbus.dbus.advertisement import BlueZLEAdvertisement, Ty
 from bless.backends.bluezdbus.server import BlessServerBlueZDBus
 from dbus_next import Variant
 
+from .const import DOMAIN
 from .connector import BtBackend
 from .encoder import Message
 
-logger = getLogger("lelight")
+logger = getLogger(DOMAIN)
 
 
 class BlessServer(BlessServerBlueZDBus):
     async def setup(self):
         await super().setup()
         self.adv = BlueZLEAdvertisement(Type.BROADCAST, 1, self.app)
-        self.adv._tx_power = -35
+        self.adv._tx_power = 35
 
         self.app.advertisements = [self.adv]
         self.bus.export(self.adv.path, self.adv)
