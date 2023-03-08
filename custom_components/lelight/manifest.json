@@ -1,20 +1,20 @@
 {
-  "domain": "lelight",
-  "name": "LeLight (IRALAN)",
-  "documentation": "https://github.com/v1ack/ha-lelight/README.md",
-  "issue_tracker": "https://github.com/v1ack/ha-lelight/issues",
-  "dependencies": [],
   "codeowners": [
     "@v1ack"
   ],
+  "config_flow": true,
+  "dependencies": [],
+  "documentation": "https://github.com/v1ack/ha-lelight/README.md",
+  "domain": "lelight",
+  "iot_class": "local_push",
+  "issue_tracker": "https://github.com/v1ack/ha-lelight/issues",
+  "loggers": [
+    "lelight"
+  ],
+  "name": "LeLight (IRALAN)",
   "requirements": [
     "bless==0.2.5",
     "dbus-next==0.2.3"
   ],
-  "iot_class": "local_push",
-  "version": "0.2.0",
-  "config_flow": true,
-  "loggers": [
-    "lelight"
-  ]
+  "version": "0.2.0"
 }
