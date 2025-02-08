@@ -25,9 +25,6 @@ class App:
         return self.encryptor.message(command)
 
     async def send(self, command: Command):
-        # Send commands twice
-        await self.backend.send_message(self._make_message(command))
-        await sleep(0.2)
         await self.backend.send_message(self._make_message(command))
 
     def __enter__(self):
