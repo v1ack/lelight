@@ -1,3 +1,4 @@
+from functools import cached_property
 from logging import getLogger
 from typing import Any
 
@@ -32,17 +33,14 @@ class LeLight(LightEntity):
     min_color_temp_kelvin = 3000
     max_color_temp_kelvin = 6400
 
-    _attr_unique_id = "lelight_light"
-
+    unique_id = "lelight_light"
+    color_mode = ColorMode.COLOR_TEMP
     supported_color_modes = {
-        ColorMode.ONOFF,
-        ColorMode.BRIGHTNESS,
         ColorMode.COLOR_TEMP,
     }
 
     def __init__(self, host: str) -> None:
         self._host = host
-        self._name = "LeLight"
         self._state = False
         self.app = App(host, BlessBackend())
 
@@ -52,9 +50,9 @@ class LeLight(LightEntity):
         # temp in kelvin from 3000 to 6400 (device format)
         self._temp = 4700
 
-    @property
+    @cached_property
     def name(self) -> str:
-        return self._name
+        return f"LeLight {self._host}"
 
     @property
     def brightness(self):
@@ -64,27 +62,23 @@ class LeLight(LightEntity):
     def color_temp_kelvin(self) -> int | None:
         return self._temp
 
-    @property
-    def color_mode(self) -> ColorMode | None:
-        return ColorMode.COLOR_TEMP
-
-    def turn_on(self, **kwargs: Any) -> None:
+    async def async_turn_on(self, **kwargs: Any) -> None:
         if not self._state:
-            self.app.send(Commands.turn_on())
+            await self.app.send(Commands.turn_on())
         logger.debug(f"lamp turn_on: {kwargs}")
         self._state = True
+
         if ATTR_BRIGHTNESS in kwargs:
             self._brightness = normalize_value(kwargs[ATTR_BRIGHTNESS], 255, 1000)
-            # logger.info(f"lamp bright: {resp}")
-            self.app.send(Commands.bright(self._brightness))
+            await self.app.send(Commands.bright(self._brightness))
+
         if ATTR_COLOR_TEMP_KELVIN in kwargs:
             self._temp = kwargs[ATTR_COLOR_TEMP_KELVIN]
-            # logger.info(f"lamp temp: {resp}")
-            self.app.send(Commands.temp(self._temp))
 
-    def turn_off(self, **kwargs: Any) -> None:
-        # logger.info(f"lamp turn_off: {resp}")
-        self.app.send(Commands.turn_off())
+            await self.app.send(Commands.temp(self._temp))
+
+    async def async_turn_off(self, **kwargs: Any) -> None:
+        await self.app.send(Commands.turn_off())
         self._state = False
 
     def update(self) -> None:
@@ -92,17 +86,16 @@ class LeLight(LightEntity):
 
         This is the only method that should fetch new data for Home Assistant.
         """
-        pass
 
     @property
     def is_on(self) -> bool:
         return self._state
 
-    @property
+    @cached_property
     def device_info(self) -> DeviceInfo | None:
         return {
             "identifiers": {(DOMAIN, self._host)},
-            "name": "lelight lamp",
+            "name": f"lelight lamp {self._host}",
             "sw_version": "none",
             "model": "lelight lamp",
             "manufacturer": "lelight",

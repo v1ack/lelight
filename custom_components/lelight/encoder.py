@@ -29,7 +29,7 @@ def b(x: int) -> int:
 
 
 def list_to_bytes_str(x: [int]) -> str:
-    return "".join(map(lambda i: int_to_bytes(i).hex(), x)).upper()
+    return "".join(int_to_bytes(i).hex() for i in x).upper()
 
 
 def int_list_to_hex(x: [int]) -> bytearray:

@@ -9,7 +9,7 @@ from .const import DOMAIN
 
 logger = getLogger(DOMAIN)
 
-DATA_SCHEMA = vol.Schema({"host": str})
+DATA_SCHEMA = vol.Schema({vol.Required("host"): str})
 
 
 async def validate_input(hass: HomeAssistant, data: dict) -> dict[str, Any]:

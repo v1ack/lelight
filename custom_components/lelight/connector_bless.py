@@ -31,7 +31,7 @@ class BlessServer(BlessServerBlueZDBus):
 
         # ManufacturerData = {UINT16: Variant}
         self.adv.ManufacturerData = {
-            message.manufacturer_id: Variant("ay", bytes(message.manufacturer_data))
+            message.manufacturer_id: Variant("ay", bytes(message.manufacturer_data)),
         }
         logger.debug("registering advertisement")
         await self.iface.call_register_advertisement(self.adv.path, {})  # type: ignore
@@ -56,11 +56,8 @@ class BlessBackend(BtBackend):
         self.server = BlessServer(name="ble_lelight", loop=self.loop)
         self.lock = Lock()
 
-    async def _send_message(self, message: Message):
+    async def send_message(self, message: Message):
         await self.server.setup_task
         async with self.lock:
             for _ in range(2):
                 await self.server.send_message(message, timeout=0.25)
-
-    def send_message(self, message: Message):
-        self.loop.create_task(self._send_message(message))
